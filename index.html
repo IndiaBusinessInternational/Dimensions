@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Warehouse Dimensions Logger</title>
+    <title>IBI Dimensions Logger</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23000000'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='%2300c5ff' font-family='Roboto, Arial, sans-serif' font-size='38' font-weight='900'>IBI</text></svg>">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         /* CSS Variables for Theming */
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
+            --bg-color: #f4f5f7;
             --surface: #ffffff;
-            --surface-alt: #f1f5f9;
+            --surface-alt: #f8fafc;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
@@ -20,6 +25,7 @@
             --success-text: #166534;
             --error-bg: #fee2e2;
             --error-text: #dc2626;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
 
         /* Dark Mode Theme */
@@ -37,14 +43,15 @@
             --success-text: #34d399;
             --error-bg: #7f1d1d;
             --error-text: #f87171;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 16px;
+            padding: 24px 16px;
             display: flex;
             justify-content: center;
             min-height: 100vh; 
@@ -53,48 +60,61 @@
 
         .container {
             background-color: var(--surface);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
             width: 100%;
             max-width: 600px;
             transition: background-color 0.3s;
             height: fit-content;
         }
 
+        /* Top Header & Theme Switch */
         .header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
         }
 
-        h2 { margin: 0; font-size: 20px; }
-
         .theme-switch {
-            background: none;
+            background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 20px;
+            padding: 8px 16px;
+            border-radius: 24px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: all 0.2s;
         }
+        .theme-switch:hover { border-color: var(--primary); transform: translateY(-1px); }
 
+        /* Branding */
+        .brand-logo {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* IBI Custom Cyan & Black Headers */
         .section-title {
-            font-size: 16px;
-            color: var(--primary);
-            margin: 24px 0 12px 0;
-            font-weight: 600;
+            background-color: #000000;
+            color: #00c5ff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
+            margin: 24px 0 16px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
         }
 
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
@@ -107,28 +127,31 @@
         .form-group { display: flex; flex-direction: column; }
 
         label {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-size: 13px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             color: var(--text-muted);
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background-color: var(--input-bg);
             color: var(--text-main);
             border: 1px solid var(--border);
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 16px;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            background-color: var(--surface);
         }
 
         button[type="submit"] {
@@ -140,30 +163,34 @@
             border: none;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
 
-        button[type="submit"]:hover { background-color: var(--primary-hover); }
-        button[type="submit"]:disabled { opacity: 0.7; cursor: not-allowed; }
+        button[type="submit"]:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        button[type="submit"]:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none;}
 
         .message {
-            margin-top: 16px;
-            padding: 12px;
+            margin-top: 20px;
+            padding: 14px;
             border-radius: 8px;
             text-align: center;
             font-weight: 600;
+            font-size: 14px;
             display: none;
         }
-        .success { background-color: var(--success-bg); color: var(--success-text); display: block; }
-        .error { background-color: var(--error-bg); color: var(--error-text); display: block; }
+        .success { background-color: var(--success-bg); color: var(--success-text); display: block; border: 1px solid #bbf7d0;}
+        .error { background-color: var(--error-bg); color: var(--error-text); display: block; border: 1px solid #fecaca;}
 
         /* History Section */
         .history-section {
-            margin-top: 32px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border);
             display: none;
         }
 
@@ -171,24 +198,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .clear-btn {
-            background: none;
+            background: transparent;
             border: 1px solid var(--error-text);
             color: var(--error-text);
             padding: 6px 12px;
             border-radius: 6px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
         }
-        
-        .clear-btn:hover {
-            background-color: var(--error-bg);
-        }
+        .clear-btn:hover { background-color: var(--error-bg); }
 
         .history-list {
             list-style: none;
@@ -197,62 +221,59 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            max-height: 400px; 
+            overflow-y: auto; 
+            padding-right: 4px;
         }
+        .history-list::-webkit-scrollbar { width: 6px; }
+        .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
         .history-item {
             background-color: var(--surface-alt);
             padding: 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             font-size: 14px;
             line-height: 1.5;
             color: var(--text-main);
+            transition: border-color 0.2s;
         }
+        .history-item:hover { border-color: var(--primary); }
 
         .history-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed var(--border);
         }
 
-        .history-name {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 16px;
-        }
+        .history-name { font-weight: 700; color: var(--primary); font-size: 15px; }
+        .history-time { font-size: 12px; font-weight: 500; color: var(--text-muted); white-space: nowrap; margin-left: 12px; }
 
-        .history-time {
-            font-size: 12px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            margin-left: 12px;
-        }
-
-        .pkg-header {
-            font-weight: bold;
-            color: var(--primary);
-            margin-top: 8px;
-            margin-bottom: 2px;
-        }
+        .pkg-header { font-weight: 700; color: var(--text-main); font-size: 13px; margin-top: 6px; text-transform: uppercase;}
+        .pkg-data { color: var(--text-muted); font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h2>Dimensions Logger</h2>
         <button class="theme-switch" id="theme-toggle" type="button">
             🌙 Dark Mode
         </button>
     </div>
 
+    <img src="logo.png" alt="India Business International" class="brand-logo" onerror="this.style.display='none'">
+
     <form id="dimensions-form">
-        <div class="section-title">Product Info</div>
-        <div class="form-grid">
+        
+        <div class="section-title">📦 Product Info</div>
+        <div class="form-grid two-cols">
             <div class="form-group">
                 <label for="productName">Product Name</label>
                 <input type="text" id="productName" name="productName" required>
@@ -267,65 +288,69 @@
             </div>
         </div>
 
-        <div class="section-title">Product Metrics</div>
-        <div class="form-grid two-cols">
+        <div class="section-title">📏 Product Metrics</div>
+        <div class="form-grid three-cols">
             <div class="form-group">
-                <label for="productWeight">Product Weight (Grams)</label>
-                <input type="number" step="0.01" id="productWeight" name="productWeight" required>
-            </div>
-            <div class="form-group">
-                <label for="productCapacity">Product Capacity (Litres)</label>
-                <input type="number" step="0.01" id="productCapacity" name="productCapacity" required>
-            </div>
-        </div>
-        <div class="form-grid three-cols" style="margin-top: 16px;">
-            <div class="form-group">
-                <label for="productLength">Length (cm)</label>
+                <label for="productLength">Product Length (cm)</label>
                 <input type="number" step="0.01" id="productLength" name="productLength" required>
             </div>
             <div class="form-group">
-                <label for="productWidth">Width (cm)</label>
+                <label for="productWidth">Product Width (cm)</label>
                 <input type="number" step="0.01" id="productWidth" name="productWidth" required>
             </div>
             <div class="form-group">
-                <label for="productHeight">Height (cm)</label>
+                <label for="productHeight">Product Height (cm)</label>
                 <input type="number" step="0.01" id="productHeight" name="productHeight" required>
             </div>
         </div>
-
-        <div class="section-title">Package Metrics</div>
-        <div class="form-grid two-cols">
+        <div class="form-grid two-cols" style="margin-top: 16px;">
             <div class="form-group">
-                <label for="cartonBoxWeight">Carton Box Weight (Grams)</label>
-                <input type="number" step="0.01" id="cartonBoxWeight" name="cartonBoxWeight" required>
+                <label for="productWeight">Product Weight (gm)</label>
+                <input type="number" step="0.01" id="productWeight" name="productWeight" required>
             </div>
             <div class="form-group">
-                <label for="packageWeight">Total Package Weight (Grams)</label>
-                <input type="number" step="0.01" id="packageWeight" name="packageWeight" required>
+                <label for="productCapacity">Product Capacity (Liters)</label>
+                <input type="number" step="0.01" id="productCapacity" name="productCapacity" required>
             </div>
         </div>
-        <div class="form-grid three-cols" style="margin-top: 16px;">
+
+        <div class="section-title">🗃️ Carton Box Metrics</div>
+        <div class="form-grid">
             <div class="form-group">
-                <label for="packageLength">Length (cm)</label>
+                <label for="cartonBoxWeight">Carton Box Weight (gm)</label>
+                <input type="number" step="0.01" id="cartonBoxWeight" name="cartonBoxWeight" required>
+            </div>
+        </div>
+
+        <div class="section-title">🏷️ Package Metrics</div>
+        <div class="form-grid three-cols">
+            <div class="form-group">
+                <label for="packageLength">Package Length (cm)</label>
                 <input type="number" step="0.01" id="packageLength" name="packageLength" required>
             </div>
             <div class="form-group">
-                <label for="packageWidth">Width (cm)</label>
+                <label for="packageWidth">Package Width (cm)</label>
                 <input type="number" step="0.01" id="packageWidth" name="packageWidth" required>
             </div>
             <div class="form-group">
-                <label for="packageHeight">Height (cm)</label>
+                <label for="packageHeight">Package Height (cm)</label>
                 <input type="number" step="0.01" id="packageHeight" name="packageHeight" required>
             </div>
         </div>
+        <div class="form-grid" style="margin-top: 16px;">
+            <div class="form-group">
+                <label for="packageWeight">Package Weight (gm)</label>
+                <input type="number" step="0.01" id="packageWeight" name="packageWeight" required>
+            </div>
+        </div>
 
-        <button type="submit" id="submit-btn">Submit Data</button>
+        <button type="submit" id="submit-btn">Submit Dimensions</button>
         <div id="status-message" class="message"></div>
     </form>
 
     <div class="history-section" id="history-section">
         <div class="history-top-bar">
-            <div class="section-title" style="margin: 0;">Recent Submissions</div>
+            <div class="section-title" style="margin: 0;">⏱️ Recent Submissions</div>
             <button type="button" class="clear-btn" id="clear-history-btn">Clear All</button>
         </div>
         <ul class="history-list" id="history-list">
@@ -339,7 +364,7 @@
     const rootElement = document.documentElement;
     
     let currentTheme = 'light';
-    try { currentTheme = localStorage.getItem('theme') || 'light'; } catch(e) {}
+    try { currentTheme = localStorage.getItem('ibi_dim_theme') || 'light'; } catch(e) {}
 
     if (currentTheme === 'dark') {
         rootElement.setAttribute('data-theme', 'dark');
@@ -351,11 +376,11 @@
         if (theme === 'dark') {
             rootElement.setAttribute('data-theme', 'light');
             themeToggle.innerHTML = '🌙 Dark Mode';
-            try { localStorage.setItem('theme', 'light'); } catch(e){}
+            try { localStorage.setItem('ibi_dim_theme', 'light'); } catch(e){}
         } else {
             rootElement.setAttribute('data-theme', 'dark');
             themeToggle.innerHTML = '☀️ Light Mode';
-            try { localStorage.setItem('theme', 'dark'); } catch(e){}
+            try { localStorage.setItem('ibi_dim_theme', 'dark'); } catch(e){}
         }
     });
 
@@ -366,7 +391,7 @@
     
     let submissionHistory = [];
     try {
-        submissionHistory = JSON.parse(localStorage.getItem('warehouseHistory4')) || [];
+        submissionHistory = JSON.parse(localStorage.getItem('ibi_warehouseHistory')) || [];
     } catch(e) {}
 
     function updateHistoryUI() {
@@ -387,17 +412,20 @@
                     <span class="history-name">${item.name}</span>
                     <span class="history-time">${item.time}</span>
                 </div>
-                <div class="pkg-header" style="margin-top: 0;">Product Dimensions:</div>
-                <div>
-                    Wt.: ${item.pWeight} gm<br>
-                    Box Wt.: ${item.boxWeight} gm<br>
-                    LWH : ${item.pLength} x ${item.pWidth} x ${item.pHeight} cm<br>
-                    Capacity: ${item.capacity} Litres
+                
+                <div class="pkg-header">Product</div>
+                <div class="pkg-data">
+                    LWH: ${item.pLength} x ${item.pWidth} x ${item.pHeight} cm<br>
+                    Wt: ${item.pWeight} gm | Cap: ${item.capacity} L
                 </div>
-                <div class="pkg-header">Package Dimensions:</div>
-                <div>
-                    PWt.: ${item.pkgWeight} gm<br>
-                    PLPWPH: ${item.pkgLength} x ${item.pkgWidth} x ${item.pkgHeight} cm
+                
+                <div class="pkg-header">Carton Box</div>
+                <div class="pkg-data">Wt: ${item.boxWeight} gm</div>
+                
+                <div class="pkg-header">Package</div>
+                <div class="pkg-data">
+                    LWH: ${item.pkgLength} x ${item.pkgWidth} x ${item.pkgHeight} cm<br>
+                    Wt: ${item.pkgWeight} gm
                 </div>
             `;
             historyList.appendChild(li);
@@ -408,7 +436,7 @@
     clearHistoryBtn.addEventListener('click', () => {
         if (confirm("Are you sure you want to clear all recent submissions from this device?")) {
             submissionHistory = [];
-            try { localStorage.removeItem('warehouseHistory4'); } catch(e) {}
+            try { localStorage.removeItem('ibi_warehouseHistory'); } catch(e) {}
             updateHistoryUI();
         }
     });
@@ -416,6 +444,7 @@
     updateHistoryUI();
 
     // --- Form Submission Logic ---
+    // Make sure your Google Apps Script is correctly receiving these ID parameters.
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyFDqcFxVo0TyAmu3RvqWn-jQKan8zR7D8ZAebvb_sJSZwdvLI9P1CVrAAi3HPUVk92/exec'; 
     const form = document.getElementById('dimensions-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -426,35 +455,35 @@
         
         const currentData = {
             name: document.getElementById('productName').value,
-            pWeight: document.getElementById('productWeight').value,
-            capacity: document.getElementById('productCapacity').value,
-            boxWeight: document.getElementById('cartonBoxWeight').value,
             pLength: document.getElementById('productLength').value,
             pWidth: document.getElementById('productWidth').value,
             pHeight: document.getElementById('productHeight').value,
-            pkgWeight: document.getElementById('packageWeight').value,
+            pWeight: document.getElementById('productWeight').value,
+            capacity: document.getElementById('productCapacity').value,
+            boxWeight: document.getElementById('cartonBoxWeight').value,
             pkgLength: document.getElementById('packageLength').value,
             pkgWidth: document.getElementById('packageWidth').value,
             pkgHeight: document.getElementById('packageHeight').value,
+            pkgWeight: document.getElementById('packageWeight').value,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         
         submitBtn.disabled = true;
-        submitBtn.innerText = 'Submitting...';
+        submitBtn.innerText = 'SUBMITTING...';
         statusMessage.className = 'message';
         statusMessage.innerText = '';
 
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
             .then(response => {
-                statusMessage.innerText = 'Success! Dimensions logged.';
+                statusMessage.innerText = 'SUCCESS! DIMENSIONS LOGGED.';
                 statusMessage.className = 'message success';
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Submit Data';
+                submitBtn.innerText = 'SUBMIT DIMENSIONS';
                 
                 submissionHistory.unshift(currentData);
                 if (submissionHistory.length > 10) submissionHistory.pop();
                 
-                try { localStorage.setItem('warehouseHistory4', JSON.stringify(submissionHistory)); } catch(e) {}
+                try { localStorage.setItem('ibi_warehouseHistory', JSON.stringify(submissionHistory)); } catch(e) {}
                 updateHistoryUI();
 
                 form.reset();
@@ -462,10 +491,10 @@
             })
             .catch(error => {
                 console.error('Error!', error.message);
-                statusMessage.innerText = 'Error saving data. Check connection.';
+                statusMessage.innerText = 'ERROR SAVING DATA. CHECK CONNECTION.';
                 statusMessage.className = 'message error';
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Submit Data';
+                submitBtn.innerText = 'SUBMIT DIMENSIONS';
             });
     });
 </script>
