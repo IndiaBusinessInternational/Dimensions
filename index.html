@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS Variables for Theming */
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
@@ -28,7 +27,6 @@
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Dark Mode Theme */
         :root[data-theme="dark"] {
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
@@ -69,52 +67,24 @@
             height: fit-content;
         }
 
-        /* Top Header & Theme Switch */
-        .header {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+        .header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; }
 
         .theme-switch {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 24px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.2s;
+            background: var(--surface); border: 1px solid var(--border); color: var(--text-main);
+            padding: 8px 16px; border-radius: 24px; cursor: pointer; font-size: 14px; font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s;
         }
         .theme-switch:hover { border-color: var(--primary); transform: translateY(-1px); }
 
-        /* Branding */
         .brand-logo {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 24px;
+            width: 100%; max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 24px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
-        /* IBI Custom Cyan & Black Headers */
         .section-title {
-            background-color: #000000;
-            color: #00c5ff;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 24px 0 16px 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
+            background-color: #000000; color: #00c5ff; padding: 12px 16px; border-radius: 8px;
+            font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            margin: 24px 0 16px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center;
         }
 
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
@@ -127,131 +97,57 @@
         .form-group { display: flex; flex-direction: column; }
 
         label {
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
+            margin-bottom: 8px; font-size: 13px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.5px; color: var(--text-muted);
         }
 
         input, select {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--input-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
+            width: 100%; padding: 14px; background-color: var(--input-bg); color: var(--text-main);
+            border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px;
             transition: all 0.2s;
         }
 
         input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
             background-color: var(--surface);
         }
 
         button[type="submit"] {
-            width: 100%;
-            padding: 16px;
-            margin-top: 32px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+            width: 100%; padding: 16px; margin-top: 32px; background-color: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
-
         button[type="submit"]:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
         button[type="submit"]:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        .message {
-            margin-top: 20px;
-            padding: 14px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 14px;
-            display: none;
-        }
+        .message { margin-top: 20px; padding: 14px; border-radius: 8px; text-align: center; font-weight: 600; font-size: 14px; display: none; }
         .success { background-color: var(--success-bg); color: var(--success-text); display: block; border: 1px solid #bbf7d0;}
         .error { background-color: var(--error-bg); color: var(--error-text); display: block; border: 1px solid #fecaca;}
 
-        /* History Section */
-        .history-section {
-            margin-top: 40px;
-            padding-top: 24px;
-            border-top: 2px solid var(--border);
-            display: none;
-        }
-
-        .history-top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
+        .history-section { margin-top: 40px; padding-top: 24px; border-top: 2px solid var(--border); display: none; }
+        .history-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 
         .clear-btn {
-            background: transparent;
-            border: 1px solid var(--error-text);
-            color: var(--error-text);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: transparent; border: 1px solid var(--error-text); color: var(--error-text);
+            padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
         }
         .clear-btn:hover { background-color: var(--error-bg); }
 
         .history-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 400px; 
-            overflow-y: auto; 
-            padding-right: 4px;
+            list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;
+            max-height: 400px; overflow-y: auto; padding-right: 4px;
         }
         .history-list::-webkit-scrollbar { width: 6px; }
         .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
         .history-item {
-            background-color: var(--surface-alt);
-            padding: 16px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 14px;
-            line-height: 1.5;
-            color: var(--text-main);
-            transition: border-color 0.2s;
+            background-color: var(--surface-alt); padding: 16px; border-radius: 10px; border: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.5; color: var(--text-main);
+            transition: border-color 0.2s; cursor: pointer;
         }
-        .history-item:hover { border-color: var(--primary); }
+        .history-item:hover { border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 6px;
-            padding-bottom: 6px;
-            border-bottom: 1px dashed var(--border);
-        }
-
+        .history-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
         .history-name { font-weight: 700; color: var(--primary); font-size: 15px; }
         .history-time { font-size: 12px; font-weight: 500; color: var(--text-muted); white-space: nowrap; margin-left: 12px; }
 
@@ -263,9 +159,7 @@
 
 <div class="container">
     <div class="header">
-        <button class="theme-switch" id="theme-toggle" type="button">
-            🌙 Dark Mode
-        </button>
+        <button class="theme-switch" id="theme-toggle" type="button">🌙 Dark Mode</button>
     </div>
 
     <img src="logo.png" alt="India Business International" class="brand-logo" onerror="this.style.display='none'">
@@ -350,7 +244,7 @@
 
     <div class="history-section" id="history-section">
         <div class="history-top-bar">
-            <div class="section-title" style="margin: 0;">⏱️ Recent Submissions</div>
+            <div class="section-title" style="margin: 0;">⏱️ Memory (Tap to Reuse)</div>
             <button type="button" class="clear-btn" id="clear-history-btn">Clear All</button>
         </div>
         <ul class="history-list" id="history-list">
@@ -384,7 +278,7 @@
         }
     });
 
-    // --- History Logic ---
+    // --- History & Editing Logic ---
     const historySection = document.getElementById('history-section');
     const historyList = document.getElementById('history-list');
     const clearHistoryBtn = document.getElementById('clear-history-btn');
@@ -403,9 +297,10 @@
         historySection.style.display = 'block';
         historyList.innerHTML = ''; 
         
-        submissionHistory.forEach(item => {
+        submissionHistory.forEach((item, index) => {
             const li = document.createElement('li');
             li.className = 'history-item';
+            li.onclick = () => loadFromHistory(index); // MAKES ITEM CLICKABLE
             
             li.innerHTML = `
                 <div class="history-header">
@@ -432,6 +327,28 @@
         });
     }
 
+    // Load data back into form for editing
+    function loadFromHistory(index) {
+        let item = submissionHistory[index];
+        if(!item) return;
+
+        document.getElementById('productName').value = item.name || '';
+        document.getElementById('bisCertified').value = item.bisCertified || '';
+        document.getElementById('productLength').value = item.pLength || '';
+        document.getElementById('productWidth').value = item.pWidth || '';
+        document.getElementById('productHeight').value = item.pHeight || '';
+        document.getElementById('productWeight').value = item.pWeight || '';
+        document.getElementById('productCapacity').value = item.capacity || '';
+        document.getElementById('cartonBoxWeight').value = item.boxWeight || '';
+        document.getElementById('packageLength').value = item.pkgLength || '';
+        document.getElementById('packageWidth').value = item.pkgWidth || '';
+        document.getElementById('packageHeight').value = item.pkgHeight || '';
+        document.getElementById('packageWeight').value = item.pkgWeight || '';
+
+        // Smooth scroll to top to edit
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     // Clear History Button Action
     clearHistoryBtn.addEventListener('click', () => {
         if (confirm("Are you sure you want to clear all recent submissions from this device?")) {
@@ -444,7 +361,6 @@
     updateHistoryUI();
 
     // --- Form Submission Logic ---
-    // Make sure your Google Apps Script is correctly receiving these ID parameters.
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyFDqcFxVo0TyAmu3RvqWn-jQKan8zR7D8ZAebvb_sJSZwdvLI9P1CVrAAi3HPUVk92/exec'; 
     const form = document.getElementById('dimensions-form');
     const submitBtn = document.getElementById('submit-btn');
@@ -455,6 +371,7 @@
         
         const currentData = {
             name: document.getElementById('productName').value,
+            bisCertified: document.getElementById('bisCertified').value,
             pLength: document.getElementById('productLength').value,
             pWidth: document.getElementById('productWidth').value,
             pHeight: document.getElementById('productHeight').value,
@@ -480,8 +397,9 @@
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'SUBMIT DIMENSIONS';
                 
+                // Keep the last 24 entries in memory
                 submissionHistory.unshift(currentData);
-                if (submissionHistory.length > 10) submissionHistory.pop();
+                if (submissionHistory.length > 24) submissionHistory.pop();
                 
                 try { localStorage.setItem('ibi_warehouseHistory', JSON.stringify(submissionHistory)); } catch(e) {}
                 updateHistoryUI();
