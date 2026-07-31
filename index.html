@@ -418,7 +418,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     <div class="topbar-left">
       <div class="ibi-logo"><svg class="mark"><use href="#ibiMark"/></svg></div>
       <div>
-        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.2</span></div>
+        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.3</span></div>
       </div>
     </div>
     <div class="topbar-right">
@@ -648,7 +648,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     </div>
   </div>
 
-  <div class="footer">IBI Dimensions Logger v2.2 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
+  <div class="footer">IBI Dimensions Logger v2.3 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
 </div>
 
 <!-- DRAWER MENU -->
@@ -667,7 +667,7 @@ tr.row-editing td{background:var(--info-bg) !important}
   <button class="drawer-item" onclick="toggleTheme();closeDrawer()"><i class="ti ti-sun"></i> Toggle Dark / Light Mode</button>
   <button class="drawer-item" onclick="closeDrawer();openBackend()"><i class="ti ti-plug"></i> Backend Connection</button>
   <div class="drawer-section-label">About</div>
-  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.2 &mdash; July 2026 &middot; Entries list, auto date &amp; time, shipping report</div>
+  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.3 &mdash; July 2026 &middot; Entries list, auto date &amp; time, shipping report</div>
 </div>
 
 <!-- REPORT MODAL -->
@@ -743,8 +743,20 @@ tr.row-editing td{background:var(--info-bg) !important}
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-//  IBI DIMENSIONS LOGGER — v2.2
+//  IBI DIMENSIONS LOGGER — v2.3
 // ---------------------------------------------------------------------------
+//  v2.3 (31 Jul 2026) — Data-quality check corrected. v2.2 flagged 7 rows as
+//                       "product bigger than its package", but every one was a
+//                       correct measurement of something that folds, rolls,
+//                       nests or has a drop handle (grow bag, koram pai, palm
+//                       leaf petti, BIS buckets — the bucket length is measured
+//                       handle-up and the handle lies down in the box). Those
+//                       now sit in their own informational list, not the error
+//                       table. In their place the check now reconciles WEIGHT,
+//                       which does catch real mistakes: parcel − product −
+//                       carton must add up, so it names kilograms typed into
+//                       the grams column and per-unit weights recorded against
+//                       a multi-pack.
 //  v2.2 (31 Jul 2026) — Shipping & Packaging Analysis report (modal + print/PDF
 //                       + CSV), built on CHARGEABLE weight = max(actual,
 //                       volumetric) since that is what couriers bill: per-
@@ -767,7 +779,7 @@ tr.row-editing td{background:var(--info-bg) !important}
 //                       ⚠ needs the v2.0 Apps Script deployed (getAll action).
 //  v1.6 and earlier   — Write-only form + local "Recent Submissions" list.
 // ═══════════════════════════════════════════════════════════════════════════
-const APP_VERSION = '2.2';
+const APP_VERSION = '2.3';
 
 // Same /exec as v1.6 — redeploy the NEW .gs onto this deployment (Manage
 // deployments -> Edit -> New version) so this URL keeps working.
@@ -1560,30 +1572,53 @@ function reportData(){
     slabs[i].count++;
   });
 
-  // Anything that would make a courier dispute, or a quote come out wrong.
-  const issues = [];
+  // Data quality. Only physics gets flagged as an ERROR — a parcel smaller
+  // than the product's bounding box is normal for anything that folds, rolls,
+  // nests or has a handle that drops (bags, mats, baskets, buckets), so that
+  // goes in its own informational list instead of being called a mistake.
+  const issues = [], compressed = [], perUnit = [];
   calc.forEach(c=>{
+    const prod = n0(c.e.pWeight), parcel = n0(c.e.kWeight), carton = n0(c.e.cartonWeight);
     const miss = [];
-    if(!n0(c.e.kWeight)) miss.push('package weight');
+    if(!parcel) miss.push('package weight');
     if(!c.pkgVol) miss.push('package dimensions');
-    if(!n0(c.e.pWeight)) miss.push('product weight');
-    if(miss.length) issues.push({product:c.product, issue:'Missing ' + miss.join(', '), detail:'—'});
-    else {
-      if(n0(c.e.pWeight) > n0(c.e.kWeight))
-        issues.push({product:c.product, issue:'Product heavier than its package',
-                     detail:`${n0(c.e.pWeight)} g product vs ${n0(c.e.kWeight)} g package`});
-      if(c.prodVol && c.pkgVol && c.prodVol > c.pkgVol)
-        issues.push({product:c.product, issue:'Product bigger than its package',
-                     detail:`${Math.round(c.prodVol)} cm³ product vs ${Math.round(c.pkgVol)} cm³ package`});
+    if(!prod) miss.push('product weight');
+    if(miss.length){ issues.push({product:c.product, issue:'Missing ' + miss.join(', '), detail:'—'}); return; }
+
+    if(prod > parcel){
+      issues.push({product:c.product, issue:'Product heavier than its parcel',
+                   detail:`${num(prod)} g product inside a ${num(parcel)} g parcel`});
+    } else {
+      const ratio = (parcel - carton) / prod;
+      const mult  = Math.round(ratio);
+      if(ratio >= 900 && ratio <= 1100){
+        // Off by a factor of a thousand, in a product whose own name is in kg:
+        // that is a unit slip, not a pack size.
+        issues.push({product:c.product, issue:'Product weight looks like kilograms',
+                     detail:`${num(prod)} g recorded; the parcel implies about ${num(Math.round(parcel-carton))} g`});
+      } else if(mult >= 2 && mult <= 100 && Math.abs(ratio-mult)/mult < 0.1){
+        // Not a mistake — the catalogue itself is written "233 gm each, 2 Qty",
+        // so a per-unit product weight against a multi-pack parcel is the house
+        // convention. Worth SHOWING, because it changes how you read the column.
+        perUnit.push({product:c.product, mult, prod, parcel, carton});
+      }
+    }
+
+    if(c.prodVol && c.pkgVol && c.prodVol > c.pkgVol){
+      compressed.push({product:c.product, prodVol:c.prodVol, pkgVol:c.pkgVol,
+                       shrink: pct(c.prodVol-c.pkgVol, c.prodVol),
+                       dims:`${n0(c.e.pLength)}×${n0(c.e.pWidth)}×${n0(c.e.pHeight)} → ${c.dims[0]}×${c.dims[1]}×${c.dims[2]}`});
     }
   });
+  compressed.sort((a,b)=>b.shrink-a.shrink);
+  perUnit.sort((a,b)=>b.mult-a.mult);
 
   const overhead = measured.filter(c=>c.packaging>0)
     .sort((a,b)=>(b.packaging/n0(b.e.kWeight))-(a.packaging/n0(a.e.kWeight)));
   const voids = measured.filter(c=>c.void!=null).sort((a,b)=>b.void-a.void);
 
   return {
-    scope, bisF, div, calc, measured, volBilled, slabs, issues, dupes, overhead, voids,
+    scope, bisF, div, calc, measured, volBilled, slabs, issues, compressed, perUnit, dupes, overhead, voids,
     label: (scope==='latest'?'Latest measurement per product':'Every logged entry')
            + (bisF==='all'?'':(bisF==='yes'?' · BIS certified':' · not BIS')),
     // In "latest" scope a row IS a product; in "all" scope it is one of several
@@ -1640,6 +1675,13 @@ function generateReport(){
     ? d.issues.map(i=>`<tr><td>${esc(i.product)}</td><td><span class="rep-flag bad">${esc(i.issue)}</span></td><td style="color:var(--text2)">${esc(i.detail)}</td></tr>`).join('')
     : `<tr><td colspan="3" style="text-align:center;color:var(--text3)">Nothing flagged — every entry has complete, consistent measurements. 🎉</td></tr>`;
 
+  const compressedRows = d.compressed.map(c=>`
+    <tr><td>${esc(c.product)}</td>
+        <td style="font-size:11.5px;color:var(--text2);white-space:nowrap">${esc(c.dims)}</td>
+        <td class="num">${num(Math.round(c.prodVol))}</td>
+        <td class="num">${num(Math.round(c.pkgVol))}</td>
+        <td class="num" style="color:var(--info-text)">−${c.shrink}%</td></tr>`).join('');
+
   const dupeRows = d.dupes.length
     ? d.dupes.map(x=>`<tr><td>${esc(x.product)}</td><td class="num">${x.times}</td><td class="num">${num(x.lo)} g</td><td class="num">${num(x.hi)} g</td><td class="num" style="color:var(--warning-text)">${x.spread}%</td></tr>`).join('')
     : '';
@@ -1690,10 +1732,27 @@ function generateReport(){
     </table>`:''}
 
     <div class="rep-section-title" style="color:var(--danger-text)"><i class="ti ti-alert-triangle"></i> Data Quality (${d.issues.length})</div>
+    <div class="rep-note">Only things that cannot be true are listed here: missing figures, a product heavier than the parcel holding it, and weights out by a factor of a thousand. Normal business patterns — per-unit weights, compressible packing — are shown below instead, not called mistakes.</div>
     <table class="rep-table">
       <thead><tr><th>Product</th><th>Issue</th><th>Detail</th></tr></thead>
       <tbody>${issueRows}</tbody>
-    </table>`;
+    </table>
+
+    ${d.perUnit.length?`
+    <div class="rep-section-title"><i class="ti ti-package-import"></i> Per-Unit Weights on Multi-Packs (${d.perUnit.length})</div>
+    <div class="rep-note">In these rows the product weight is for <b>one piece</b> while the parcel holds several — which matches how the catalogue is written (&ldquo;233 gm each, 2 Qty&rdquo;). Not an error, but read the Product Weight column accordingly, and remember the parcel weight is the one couriers bill.</div>
+    <table class="rep-table">
+      <thead><tr><th>Product</th><th class="num">Per unit</th><th class="num">Pieces</th><th class="num">Carton</th><th class="num">Parcel</th></tr></thead>
+      <tbody>${d.perUnit.map(p=>`<tr><td>${esc(p.product)}</td><td class="num">${num(p.prod)} g</td><td class="num">&times;${p.mult}</td><td class="num" style="color:var(--text2)">${num(p.carton)} g</td><td class="num">${num(p.parcel)} g</td></tr>`).join('')}</tbody>
+    </table>`:''}
+
+    ${d.compressed.length?`
+    <div class="rep-section-title"><i class="ti ti-arrows-diagonal-minimize-2"></i> Packs Smaller Than the Product (${d.compressed.length})</div>
+    <div class="rep-note">The parcel is smaller than the product's own bounding box. That is <b>expected</b> for anything that folds, rolls, nests or has a handle that drops — a grow bag folds flat, a pai rolls, a petti nests, a bucket's handle lies down. Listed for information: only worth a second look if the item is <b>rigid</b>, in which case one of the two measurements is wrong.</div>
+    <table class="rep-table">
+      <thead><tr><th>Product</th><th>Product → package</th><th class="num">Product cm³</th><th class="num">Package cm³</th><th class="num">Packs to</th></tr></thead>
+      <tbody>${compressedRows}</tbody>
+    </table>`:''}`;
   out.style.display='block';
   acts.style.display='flex';
 }
@@ -1755,7 +1814,14 @@ function printReport(){
     <h3>Void Space in the Box (top 15)</h3>
     <table><thead><tr><th>Product</th><th class="r">Product cm³</th><th class="r">Package cm³</th><th class="r">Void</th></tr></thead><tbody>${voidRows}</tbody></table>
     <h3 style="color:#b11">Data Quality (${d.issues.length})</h3>
+    <div class="note">Only things that cannot be true: missing figures, a product heavier than its parcel, and weights out by a factor of a thousand.</div>
     <table><thead><tr><th>Product</th><th>Issue</th><th>Detail</th></tr></thead><tbody>${issueRows}</tbody></table>
+    ${d.compressed.length?`
+    <h3>Packs Smaller Than the Product (${d.compressed.length})</h3>
+    <div class="note">Expected for anything that folds, rolls, nests or has a handle that drops. Only worth checking if the item is rigid.</div>
+    <table><thead><tr><th>Product</th><th>Product &rarr; package</th><th class="r">Product cm³</th><th class="r">Package cm³</th><th class="r">Packs to</th></tr></thead><tbody>${
+      d.compressed.map(c=>`<tr><td>${esc(c.product)}</td><td>${esc(c.dims)}</td><td class="r">${num(Math.round(c.prodVol))}</td><td class="r">${num(Math.round(c.pkgVol))}</td><td class="r">&minus;${c.shrink}%</td></tr>`).join('')
+    }</tbody></table>`:''}
     <div class="foot"><span>Generated ${esc(genAt)}</span><span>indiabusinessinternational@gmail.com</span></div>
   </body></html>`;
   const win=window.open('','_blank');
@@ -1798,6 +1864,19 @@ function downloadReportCSV(){
   rows.push([], ['DATA QUALITY'], ['Product','Issue','Detail']);
   if(d.issues.length) d.issues.forEach(i=>rows.push([i.product, i.issue, i.detail]));
   else rows.push(['Nothing flagged.']);
+  if(d.perUnit.length){
+    rows.push([], ['PER-UNIT WEIGHTS ON MULTI-PACKS (house convention, not an error)'],
+              ['Product','Per unit g','Pieces','Carton g','Parcel g']);
+    d.perUnit.forEach(p=>rows.push([p.product, p.prod, p.mult, p.carton, p.parcel]));
+  }
+  if(d.compressed.length){
+    rows.push([], ['PACKS SMALLER THAN THE PRODUCT (expected for foldable / rolled / nested / handled items)'],
+              ['Product','Product dims','Package dims','Product cm3','Package cm3','Packs to %']);
+    d.compressed.forEach(c=>{
+      const parts=String(c.dims).split('→');
+      rows.push([c.product, (parts[0]||'').trim(), (parts[1]||'').trim(), Math.round(c.prodVol), Math.round(c.pkgVol), -c.shrink]);
+    });
+  }
   const csv=rows.map(r=>r.map(v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
   const blob=new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');
