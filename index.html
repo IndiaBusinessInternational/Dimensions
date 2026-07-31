@@ -388,6 +388,17 @@ tr.row-editing td{background:var(--info-bg) !important}
 .dim-sub{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap}
 .bis-chip{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;background:var(--success-bg);color:var(--success-text);text-transform:uppercase;letter-spacing:0.04em}
 .action-btn.copy:hover{color:var(--amber);background:var(--warning-bg)}
+/* report extras */
+.rep-bar{display:block;height:6px;border-radius:4px;background:var(--bg4);overflow:hidden;min-width:60px}
+.rep-bar span{display:block;height:100%;background:var(--cyan);border-radius:4px}
+.rep-bar.warn span{background:var(--danger-text)}
+.rep-note{font-size:11.5px;color:var(--text3);margin:4px 0 10px;line-height:1.45}
+.rep-flag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;background:var(--info-bg);color:var(--info-text);white-space:nowrap}
+.rep-flag.vol{background:var(--warning-bg);color:var(--warning-text)}
+.rep-flag.bad{background:var(--danger-bg);color:var(--danger-text)}
+.rep-scroll{max-height:320px;overflow:auto}
+.rep-controls-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){ .rep-controls-row{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -407,7 +418,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     <div class="topbar-left">
       <div class="ibi-logo"><svg class="mark"><use href="#ibiMark"/></svg></div>
       <div>
-        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.0</span></div>
+        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.2</span></div>
       </div>
     </div>
     <div class="topbar-right">
@@ -474,6 +485,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     <span class="status-txt"><span class="status-dot" id="statusDot"></span><span id="statusTxt">Connecting...</span></span>
     <span class="status-actions">
       <button class="s-btn" onclick="loadAll()"><i class="ti ti-refresh"></i> Sync</button>
+      <button class="s-btn rep-btn" onclick="openReport()"><i class="ti ti-report-analytics"></i> Report</button>
       <button class="s-btn" onclick="exportCSV()"><i class="ti ti-download"></i> CSV</button>
     </span>
   </div>
@@ -636,7 +648,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     </div>
   </div>
 
-  <div class="footer">IBI Dimensions Logger v2.0 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
+  <div class="footer">IBI Dimensions Logger v2.2 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
 </div>
 
 <!-- DRAWER MENU -->
@@ -648,13 +660,58 @@ tr.row-editing td{background:var(--info-bg) !important}
   </div>
   <div class="drawer-section-label">App</div>
   <button class="drawer-item" onclick="loadAll();closeDrawer()"><i class="ti ti-refresh"></i> Sync with Google Sheet</button>
+  <button class="drawer-item" onclick="closeDrawer();openReport()"><i class="ti ti-report-analytics"></i> Shipping &amp; Packaging Report</button>
   <button class="drawer-item" onclick="exportCSV();closeDrawer()"><i class="ti ti-download"></i> Export CSV</button>
   <a class="drawer-item" href="https://docs.google.com/spreadsheets/d/1kAuSd-_OiPnDtXzqQMkBFtZdVzfW44kiKAsSZHsYpb8/edit#gid=0" target="_blank" rel="noopener" onclick="closeDrawer()"><i class="ti ti-external-link"></i> Open Google Sheet</a>
   <div class="drawer-section-label">Settings</div>
   <button class="drawer-item" onclick="toggleTheme();closeDrawer()"><i class="ti ti-sun"></i> Toggle Dark / Light Mode</button>
   <button class="drawer-item" onclick="closeDrawer();openBackend()"><i class="ti ti-plug"></i> Backend Connection</button>
   <div class="drawer-section-label">About</div>
-  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.0 &mdash; July 2026 &middot; Entries list + auto date &amp; time</div>
+  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.2 &mdash; July 2026 &middot; Entries list, auto date &amp; time, shipping report</div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="report-overlay" id="reportOverlay" onclick="closeReport()"></div>
+<div class="report-modal" id="reportModal" role="dialog" aria-modal="true" aria-label="Shipping and Packaging Report">
+  <div class="report-hdr">
+    <span class="report-hdr-title"><i class="ti ti-report-analytics"></i> Shipping &amp; Packaging Analysis</span>
+    <button class="drawer-close" onclick="closeReport()" aria-label="Close"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="report-body">
+    <div class="report-controls">
+      <div class="rep-controls-row">
+        <div class="form-group">
+          <label for="rScope">Measurements</label>
+          <select id="rScope">
+            <option value="latest">Latest per product</option>
+            <option value="all">Every entry</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rBis">BIS</label>
+          <select id="rBis">
+            <option value="all">All products</option>
+            <option value="yes">BIS certified only</option>
+            <option value="no">Not BIS</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="rDivisor">Volumetric divisor <span class="hint">— the courier's dimensional-weight factor</span></label>
+        <select id="rDivisor">
+          <option value="5000">5000 — Delhivery / eKart / Amazon standard</option>
+          <option value="4000">4000 — heavier penalty (some air / express)</option>
+          <option value="6000">6000 — lighter penalty (some surface)</option>
+        </select>
+      </div>
+      <button class="btn-save gen-btn" onclick="generateReport()"><i class="ti ti-file-analytics"></i> Generate Report</button>
+    </div>
+    <div id="reportOutput" class="report-output" style="display:none"></div>
+  </div>
+  <div class="report-actions" id="reportActions" style="display:none">
+    <button class="s-btn" onclick="printReport()"><i class="ti ti-printer"></i> Print / Save PDF</button>
+    <button class="s-btn rep-btn" onclick="downloadReportCSV()"><i class="ti ti-download"></i> Download CSV</button>
+  </div>
 </div>
 
 <!-- BACKEND MODAL -->
@@ -686,8 +743,19 @@ tr.row-editing td{background:var(--info-bg) !important}
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-//  IBI DIMENSIONS LOGGER — v2.0
+//  IBI DIMENSIONS LOGGER — v2.2
 // ---------------------------------------------------------------------------
+//  v2.2 (31 Jul 2026) — Shipping & Packaging Analysis report (modal + print/PDF
+//                       + CSV), built on CHARGEABLE weight = max(actual,
+//                       volumetric) since that is what couriers bill: per-
+//                       product chargeable weight and what drives it, courier
+//                       slab distribution, packaging overhead, void space in
+//                       the box, repeat measurements that disagree, and a data
+//                       quality sweep. Divisor selectable (5000/4000/6000).
+//  v2.1 (31 Jul 2026) — Backend-only: read the Date & Time column as the sheet
+//                       DISPLAYS it. Sheets had swallowed ambiguous dd-MM
+//                       strings as month-first dates (1 April stored as
+//                       4 January); fixLegacyDates() repaired the stored values.
 //  v2.0 (31 Jul 2026) — The app is no longer write-only. Every entry in the
 //                       Google Sheet is listed, searchable, sortable, editable
 //                       and deletable, in the same table shell as IBI Stock
@@ -699,7 +767,7 @@ tr.row-editing td{background:var(--info-bg) !important}
 //                       ⚠ needs the v2.0 Apps Script deployed (getAll action).
 //  v1.6 and earlier   — Write-only form + local "Recent Submissions" list.
 // ═══════════════════════════════════════════════════════════════════════════
-const APP_VERSION = '2.0';
+const APP_VERSION = '2.2';
 
 // Same /exec as v1.6 — redeploy the NEW .gs onto this deployment (Manage
 // deployments -> Edit -> New version) so this URL keeps working.
@@ -1387,6 +1455,357 @@ async function deleteEntry(id){
     console.error(err);
     showToast('Could not delete — check the connection','error');
   }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SHIPPING & PACKAGING ANALYSIS REPORT
+//  Couriers do not bill on what a parcel weighs — they bill on the GREATER of
+//  actual weight and volumetric weight (L×W×H ÷ divisor). So the report is
+//  built around chargeable weight: which products are billed on air rather
+//  than mass, which slab each one lands in, how much of the parcel is
+//  packaging, and how much of the box is empty space.
+// ═══════════════════════════════════════════════════════════════════════════
+let lastReport = null;
+
+function openReport(){ el('reportModal').classList.add('open'); el('reportOverlay').classList.add('open'); }
+function closeReport(){ el('reportModal').classList.remove('open'); el('reportOverlay').classList.remove('open'); }
+
+function n0(v){ const n=+v; return isNaN(n)?0:n; }
+function kg(v){ return Math.round(v*1000)/1000; }
+function pct(n, total){ return total ? Math.round(n/total*1000)/10 : 0; }
+function bar(value, max, warn){
+  const w = max>0 ? Math.round(value/max*100) : 0;
+  return `<span class="rep-bar${warn?' warn':''}"><span style="width:${w}%"></span></span>`;
+}
+
+// Volumetric (dimensional) weight in kg from centimetres.
+function volumetric(e, div){
+  const v = n0(e.kLength)*n0(e.kWidth)*n0(e.kHeight);
+  return v>0 ? v/div : 0;
+}
+const SLABS = [
+  {max:0.25, label:'Up to 250 g'},
+  {max:0.5,  label:'251 – 500 g'},
+  {max:1,    label:'501 g – 1 kg'},
+  {max:2,    label:'1 – 2 kg'},
+  {max:5,    label:'2 – 5 kg'},
+  {max:Infinity, label:'Over 5 kg'}
+];
+function slabOf(w){ return SLABS.find(s=>w<=s.max) || SLABS[SLABS.length-1]; }
+
+function reportData(){
+  const scope = el('rScope').value, bisF = el('rBis').value, div = +el('rDivisor').value;
+
+  let rows = items.filter(e=>{
+    if(bisF==='yes' && String(e.bis||'').toLowerCase()!=='yes') return false;
+    if(bisF==='no'  && String(e.bis||'').toLowerCase()==='yes') return false;
+    return true;
+  });
+
+  // Repeat measurements of the same product are normal (re-weighed, re-packed).
+  // "Latest per product" keeps only the newest, which is what you'd quote to a
+  // courier; "every entry" keeps them all so you can see the drift.
+  const dupes = [];
+  if(scope==='latest'){
+    const byName = new Map();
+    rows.forEach(e=>{
+      const k = String(e.product||'').trim().toLowerCase();
+      if(!k) return;
+      if(!byName.has(k)) byName.set(k, []);
+      byName.get(k).push(e);
+    });
+    const latest = [];
+    byName.forEach(list=>{
+      list.sort((a,b)=>String(loggedTs(b)).localeCompare(String(loggedTs(a))) || (b.row||0)-(a.row||0));
+      latest.push(list[0]);
+      // Flag products whose repeat measurements disagree by more than 10% —
+      // one of them is wrong, and the wrong one may be what you quoted.
+      if(list.length>1){
+        const w = list.map(e=>n0(e.kWeight)).filter(x=>x>0);
+        if(w.length>1){
+          const lo=Math.min(...w), hi=Math.max(...w);
+          if(lo>0 && (hi-lo)/hi>0.1) dupes.push({product:list[0].product, times:list.length, lo, hi, spread:pct(hi-lo, hi)});
+        }
+      }
+    });
+    rows = latest;
+  }
+
+  const calc = rows.map(e=>{
+    const actual = n0(e.kWeight)/1000;
+    const vol = volumetric(e, div);
+    const chargeable = Math.max(actual, vol);
+    const prodVol = n0(e.pLength)*n0(e.pWidth)*n0(e.pHeight);
+    const pkgVol  = n0(e.kLength)*n0(e.kWidth)*n0(e.kHeight);
+    return {
+      e, product: e.product || '(unnamed)', bis: e.bis,
+      dims: [n0(e.kLength), n0(e.kWidth), n0(e.kHeight)],
+      actual, vol, chargeable,
+      volBilled: vol>actual && actual>0,
+      packaging: n0(e.kWeight)-n0(e.pWeight),                       // grams of box + filler
+      cartonShare: pct(n0(e.cartonWeight), n0(e.kWeight)),
+      void: pkgVol>0 && prodVol>0 ? pct(pkgVol-prodVol, pkgVol) : null,
+      prodVol, pkgVol
+    };
+  });
+
+  const measured = calc.filter(c=>c.chargeable>0);
+  const volBilled = calc.filter(c=>c.volBilled);
+  const totalCharge = measured.reduce((s,c)=>s+c.chargeable,0);
+
+  // Slab distribution — couriers price in steps, so this is the money table.
+  const slabs = SLABS.map(s=>({label:s.label, count:0}));
+  measured.forEach(c=>{
+    const i = SLABS.indexOf(slabOf(c.chargeable));
+    slabs[i].count++;
+  });
+
+  // Anything that would make a courier dispute, or a quote come out wrong.
+  const issues = [];
+  calc.forEach(c=>{
+    const miss = [];
+    if(!n0(c.e.kWeight)) miss.push('package weight');
+    if(!c.pkgVol) miss.push('package dimensions');
+    if(!n0(c.e.pWeight)) miss.push('product weight');
+    if(miss.length) issues.push({product:c.product, issue:'Missing ' + miss.join(', '), detail:'—'});
+    else {
+      if(n0(c.e.pWeight) > n0(c.e.kWeight))
+        issues.push({product:c.product, issue:'Product heavier than its package',
+                     detail:`${n0(c.e.pWeight)} g product vs ${n0(c.e.kWeight)} g package`});
+      if(c.prodVol && c.pkgVol && c.prodVol > c.pkgVol)
+        issues.push({product:c.product, issue:'Product bigger than its package',
+                     detail:`${Math.round(c.prodVol)} cm³ product vs ${Math.round(c.pkgVol)} cm³ package`});
+    }
+  });
+
+  const overhead = measured.filter(c=>c.packaging>0)
+    .sort((a,b)=>(b.packaging/n0(b.e.kWeight))-(a.packaging/n0(a.e.kWeight)));
+  const voids = measured.filter(c=>c.void!=null).sort((a,b)=>b.void-a.void);
+
+  return {
+    scope, bisF, div, calc, measured, volBilled, slabs, issues, dupes, overhead, voids,
+    label: (scope==='latest'?'Latest measurement per product':'Every logged entry')
+           + (bisF==='all'?'':(bisF==='yes'?' · BIS certified':' · not BIS')),
+    // In "latest" scope a row IS a product; in "all" scope it is one of several
+    // measurements of one, so the tables have to say which they are counting.
+    unit:    scope==='latest' ? 'products' : 'measurements',
+    unitCap: scope==='latest' ? 'Products' : 'Measurements',
+    products: new Set(calc.map(c=>c.product.toLowerCase())).size,
+    entries: calc.length,
+    avgCharge: measured.length ? totalCharge/measured.length : 0,
+    heaviest: measured.slice().sort((a,b)=>b.chargeable-a.chargeable)[0]
+  };
+}
+
+function generateReport(){
+  const d = reportData();
+  lastReport = d;
+  const out = el('reportOutput'), acts = el('reportActions');
+  if(!d.entries){
+    out.innerHTML = `<div class="rep-empty"><i class="ti ti-inbox"></i>No entries in this selection.</div>`;
+    out.style.display='block'; acts.style.display='none';
+    return;
+  }
+
+  const chargeRows = d.measured.slice().sort((a,b)=>b.chargeable-a.chargeable).map(c=>`
+    <tr>
+      <td>${esc(c.product)}</td>
+      <td style="font-size:11.5px;color:var(--text2);white-space:nowrap">${c.dims[0]}&times;${c.dims[1]}&times;${c.dims[2]}</td>
+      <td class="num">${kg(c.actual)}</td>
+      <td class="num" style="color:${c.volBilled?'var(--warning-text)':'var(--text2)'}">${kg(c.vol)}</td>
+      <td class="num" style="font-weight:700">${kg(c.chargeable)}</td>
+      <td class="center">${c.volBilled?'<span class="rep-flag vol">Volumetric</span>':'<span class="rep-flag">Actual</span>'}</td>
+    </tr>`).join('');
+
+  const maxSlab = Math.max(...d.slabs.map(s=>s.count), 1);
+  const slabRows = d.slabs.map(s=>`
+    <tr><td>${esc(s.label)}</td><td class="num">${num(s.count)}</td><td class="num">${pct(s.count,d.measured.length)}%</td><td>${bar(s.count,maxSlab)}</td></tr>`).join('');
+
+  const overheadRows = d.overhead.slice(0,15).map(c=>`
+    <tr><td>${esc(c.product)}</td>
+        <td class="num">${num(n0(c.e.pWeight))} g</td>
+        <td class="num">${num(n0(c.e.kWeight))} g</td>
+        <td class="num" style="color:var(--amber)">${num(Math.round(c.packaging))} g</td>
+        <td class="num">${pct(c.packaging, n0(c.e.kWeight))}%</td>
+        <td class="num" style="color:var(--text2)">${c.cartonShare}%</td></tr>`).join('');
+
+  const voidRows = d.voids.slice(0,15).map(c=>`
+    <tr><td>${esc(c.product)}</td>
+        <td class="num">${num(Math.round(c.prodVol))}</td>
+        <td class="num">${num(Math.round(c.pkgVol))}</td>
+        <td class="num" style="color:${c.void>=60?'var(--danger-text)':'var(--text)'}">${c.void}%</td>
+        <td>${bar(c.void,100,c.void>=60)}</td></tr>`).join('');
+
+  const issueRows = d.issues.length
+    ? d.issues.map(i=>`<tr><td>${esc(i.product)}</td><td><span class="rep-flag bad">${esc(i.issue)}</span></td><td style="color:var(--text2)">${esc(i.detail)}</td></tr>`).join('')
+    : `<tr><td colspan="3" style="text-align:center;color:var(--text3)">Nothing flagged — every entry has complete, consistent measurements. 🎉</td></tr>`;
+
+  const dupeRows = d.dupes.length
+    ? d.dupes.map(x=>`<tr><td>${esc(x.product)}</td><td class="num">${x.times}</td><td class="num">${num(x.lo)} g</td><td class="num">${num(x.hi)} g</td><td class="num" style="color:var(--warning-text)">${x.spread}%</td></tr>`).join('')
+    : '';
+
+  out.innerHTML = `
+    <div class="rep-summary">
+      <div class="rep-card"><div class="lbl">Products</div><div class="val" style="color:var(--cyan)">${num(d.products)}</div></div>
+      <div class="rep-card"><div class="lbl">Avg chargeable</div><div class="val" style="color:var(--success-text)">${kg(d.avgCharge)} kg</div></div>
+      <div class="rep-card"><div class="lbl">Billed on volume</div><div class="val" style="color:var(--amber)">${num(d.volBilled.length)}</div></div>
+      <div class="rep-card"><div class="lbl">Flagged</div><div class="val" style="color:var(--danger-text)">${num(d.issues.length)}</div></div>
+    </div>
+    <div class="rep-note">${esc(d.label)} · divisor ${d.div}. Chargeable weight is the greater of actual and volumetric (L&times;W&times;H &divide; ${d.div}), which is what the courier bills.
+      ${d.volBilled.length?`<b>${d.volBilled.length}</b> of ${d.measured.length} ${d.unit} are billed on air, not mass — shrink those boxes and the freight drops.`:'Nothing is billed on volume — the packaging is tight.'}</div>
+
+    <div class="rep-section-title"><i class="ti ti-scale-outline"></i> Chargeable Weight by Product</div>
+    <div class="rep-scroll"><table class="rep-table">
+      <thead><tr><th>Product</th><th>Package L&times;W&times;H</th><th class="num">Actual kg</th><th class="num">Volumetric kg</th><th class="num">Chargeable kg</th><th class="center">Billed on</th></tr></thead>
+      <tbody>${chargeRows}</tbody>
+    </table></div>
+
+    <div class="rep-section-title"><i class="ti ti-stack-2"></i> Courier Weight Slabs</div>
+    <div class="rep-note">Where each parcel lands once chargeable weight is applied — a product just over a slab edge is the cheapest freight saving there is.</div>
+    <table class="rep-table">
+      <thead><tr><th>Slab</th><th class="num">${d.unitCap}</th><th class="num">Share</th><th style="width:110px">&nbsp;</th></tr></thead>
+      <tbody>${slabRows}</tbody>
+    </table>
+
+    <div class="rep-section-title"><i class="ti ti-box-seam"></i> Packaging Overhead</div>
+    <div class="rep-note">How many grams of every parcel are box and filler rather than product — the top 15 by share.</div>
+    <div class="rep-scroll"><table class="rep-table">
+      <thead><tr><th>Product</th><th class="num">Product</th><th class="num">Parcel</th><th class="num">Packaging</th><th class="num">Share</th><th class="num">Carton</th></tr></thead>
+      <tbody>${overheadRows}</tbody>
+    </table></div>
+
+    <div class="rep-section-title"><i class="ti ti-box-padding"></i> Void Space in the Box</div>
+    <div class="rep-note">Package volume against product volume. Above 60% means you are mostly shipping air.</div>
+    <div class="rep-scroll"><table class="rep-table">
+      <thead><tr><th>Product</th><th class="num">Product cm³</th><th class="num">Package cm³</th><th class="num">Void</th><th style="width:110px">&nbsp;</th></tr></thead>
+      <tbody>${voidRows}</tbody>
+    </table></div>
+
+    ${d.dupes.length?`
+    <div class="rep-section-title" style="color:var(--warning-text)"><i class="ti ti-versions"></i> Products Measured More Than Once, Disagreeing (${d.dupes.length})</div>
+    <div class="rep-note">The same product weighed differently on different days by more than 10%. Only the latest is used above — but one of the two is wrong.</div>
+    <table class="rep-table">
+      <thead><tr><th>Product</th><th class="num">Times</th><th class="num">Lowest</th><th class="num">Highest</th><th class="num">Spread</th></tr></thead>
+      <tbody>${dupeRows}</tbody>
+    </table>`:''}
+
+    <div class="rep-section-title" style="color:var(--danger-text)"><i class="ti ti-alert-triangle"></i> Data Quality (${d.issues.length})</div>
+    <table class="rep-table">
+      <thead><tr><th>Product</th><th>Issue</th><th>Detail</th></tr></thead>
+      <tbody>${issueRows}</tbody>
+    </table>`;
+  out.style.display='block';
+  acts.style.display='flex';
+}
+
+function printReport(){
+  if(!lastReport){ showToast('Generate a report first','error'); return; }
+  const d=lastReport;
+  const genAt=new Date().toLocaleString('en-US',{day:'2-digit',month:'short',year:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:true});
+  const chargeRows=d.measured.slice().sort((a,b)=>b.chargeable-a.chargeable).map(c=>
+    `<tr><td>${esc(c.product)}</td><td class="r">${c.dims[0]}&times;${c.dims[1]}&times;${c.dims[2]}</td><td class="r">${kg(c.actual)}</td><td class="r">${kg(c.vol)}</td><td class="r"><b>${kg(c.chargeable)}</b></td><td>${c.volBilled?'Volumetric':'Actual'}</td></tr>`).join('');
+  const slabRows=d.slabs.map(s=>`<tr><td>${esc(s.label)}</td><td class="r">${num(s.count)}</td><td class="r">${pct(s.count,d.measured.length)}%</td></tr>`).join('');
+  const overheadRows=d.overhead.slice(0,15).map(c=>
+    `<tr><td>${esc(c.product)}</td><td class="r">${num(n0(c.e.pWeight))}</td><td class="r">${num(n0(c.e.kWeight))}</td><td class="r">${num(Math.round(c.packaging))}</td><td class="r">${pct(c.packaging,n0(c.e.kWeight))}%</td></tr>`).join('');
+  const voidRows=d.voids.slice(0,15).map(c=>
+    `<tr><td>${esc(c.product)}</td><td class="r">${num(Math.round(c.prodVol))}</td><td class="r">${num(Math.round(c.pkgVol))}</td><td class="r">${c.void}%</td></tr>`).join('');
+  const issueRows=d.issues.length
+    ? d.issues.map(i=>`<tr><td>${esc(i.product)}</td><td>${esc(i.issue)}</td><td>${esc(i.detail)}</td></tr>`).join('')
+    : `<tr><td colspan="3" style="text-align:center">Nothing flagged.</td></tr>`;
+  const html=`<!doctype html><html><head><meta charset="utf-8"><title>IBI Shipping &amp; Packaging Analysis</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:'Roboto','Segoe UI',Arial,sans-serif;color:#111;margin:26px;font-size:13px}
+    h1{font-size:19px;margin:0;color:#0086ad}
+    h2{font-size:14px;margin:2px 0;font-weight:600}
+    h3{font-size:14px;margin:16px 0 6px}
+    .muted{color:#666;font-size:12px}
+    .head{border-bottom:2px solid #00c5ff;padding-bottom:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:50%;border:3px solid #00c5ff;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0086ad;font-size:15px;letter-spacing:1px;flex-shrink:0}
+    .cards{display:flex;gap:10px;margin:14px 0}
+    .card{flex:1;border:1px solid #ddd;border-radius:8px;padding:10px;text-align:center}
+    .card .l{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#666}
+    .card .v{font-size:17px;font-weight:700;margin-top:4px}
+    table{width:100%;border-collapse:collapse;margin-bottom:4px}
+    th,td{border:1px solid #ddd;padding:6px 8px;text-align:left;font-size:12px;vertical-align:top}
+    th{background:#f2f6f8}
+    td.r,th.r{text-align:right;white-space:nowrap}
+    .note{color:#666;font-size:11px;margin:4px 0 10px}
+    .foot{margin-top:24px;border-top:1px solid #ddd;padding-top:8px;color:#666;font-size:11px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+    @media print{ body{margin:12mm} h3{page-break-after:avoid} tr{page-break-inside:avoid} }
+  </style></head><body>
+    <div class="head">
+      <div class="brand"><div class="logo">IBI</div><div><h1>India Business International</h1><h2>Shipping &amp; Packaging Analysis</h2><div class="muted">Product &amp; Package Dimensions — Kanyakumari</div></div></div>
+      <div style="text-align:right"><div style="font-size:15px;font-weight:700">Divisor ${d.div}</div><div class="muted">${esc(d.label)}</div></div>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="l">Products</div><div class="v" style="color:#0086ad">${num(d.products)}</div></div>
+      <div class="card"><div class="l">Avg chargeable</div><div class="v" style="color:#1a7d1a">${kg(d.avgCharge)} kg</div></div>
+      <div class="card"><div class="l">Billed on volume</div><div class="v" style="color:#a86400">${num(d.volBilled.length)}</div></div>
+      <div class="card"><div class="l">Flagged</div><div class="v" style="color:#b11">${num(d.issues.length)}</div></div>
+    </div>
+    <div class="note">Chargeable weight is the greater of actual weight and volumetric weight (L&times;W&times;H &divide; ${d.div}) — that is what the courier bills.</div>
+    <h3>Chargeable Weight by Product</h3>
+    <table><thead><tr><th>Product</th><th class="r">Package L&times;W&times;H</th><th class="r">Actual kg</th><th class="r">Volumetric kg</th><th class="r">Chargeable kg</th><th>Billed on</th></tr></thead><tbody>${chargeRows}</tbody></table>
+    <h3>Courier Weight Slabs</h3>
+    <table><thead><tr><th>Slab</th><th class="r">${d.unitCap}</th><th class="r">Share</th></tr></thead><tbody>${slabRows}</tbody></table>
+    <h3>Packaging Overhead (top 15)</h3>
+    <table><thead><tr><th>Product</th><th class="r">Product g</th><th class="r">Parcel g</th><th class="r">Packaging g</th><th class="r">Share</th></tr></thead><tbody>${overheadRows}</tbody></table>
+    <h3>Void Space in the Box (top 15)</h3>
+    <table><thead><tr><th>Product</th><th class="r">Product cm³</th><th class="r">Package cm³</th><th class="r">Void</th></tr></thead><tbody>${voidRows}</tbody></table>
+    <h3 style="color:#b11">Data Quality (${d.issues.length})</h3>
+    <table><thead><tr><th>Product</th><th>Issue</th><th>Detail</th></tr></thead><tbody>${issueRows}</tbody></table>
+    <div class="foot"><span>Generated ${esc(genAt)}</span><span>indiabusinessinternational@gmail.com</span></div>
+  </body></html>`;
+  const win=window.open('','_blank');
+  if(!win){ showToast('Allow pop-ups to print, or use Download CSV','error'); return; }
+  win.document.open(); win.document.write(html); win.document.close(); win.focus();
+  setTimeout(()=>{ try{ win.print(); }catch(e){} }, 400);
+}
+
+function downloadReportCSV(){
+  if(!lastReport){ showToast('Generate a report first','error'); return; }
+  const d=lastReport;
+  const rows=[
+    ['IBI Dimensions Logger — Shipping & Packaging Analysis'],
+    ['Selection', d.label],
+    ['Volumetric divisor', d.div],
+    ['Generated', new Date().toLocaleString('en-US')],
+    [],
+    ['SUMMARY'],
+    ['Products', d.products], ['Entries analysed', d.entries],
+    ['Average chargeable weight (kg)', kg(d.avgCharge)],
+    ['Billed on volumetric weight', d.volBilled.length],
+    ['Flagged for data quality', d.issues.length],
+    [],
+    ['CHARGEABLE WEIGHT BY PRODUCT'],
+    ['Product','BIS','Pkg L (cm)','Pkg W (cm)','Pkg H (cm)','Actual kg','Volumetric kg','Chargeable kg','Billed on','Slab']
+  ];
+  d.measured.slice().sort((a,b)=>b.chargeable-a.chargeable).forEach(c=>rows.push([
+    c.product, c.bis, c.dims[0], c.dims[1], c.dims[2], kg(c.actual), kg(c.vol), kg(c.chargeable),
+    c.volBilled?'Volumetric':'Actual', slabOf(c.chargeable).label]));
+  rows.push([], ['COURIER WEIGHT SLABS'], ['Slab', d.unitCap, 'Share %']);
+  d.slabs.forEach(s=>rows.push([s.label, s.count, pct(s.count,d.measured.length)]));
+  rows.push([], ['PACKAGING OVERHEAD'], ['Product','Product g','Parcel g','Packaging g','Packaging share %','Carton share %']);
+  d.overhead.forEach(c=>rows.push([c.product, n0(c.e.pWeight), n0(c.e.kWeight), Math.round(c.packaging), pct(c.packaging,n0(c.e.kWeight)), c.cartonShare]));
+  rows.push([], ['VOID SPACE'], ['Product','Product cm3','Package cm3','Void %']);
+  d.voids.forEach(c=>rows.push([c.product, Math.round(c.prodVol), Math.round(c.pkgVol), c.void]));
+  if(d.dupes.length){
+    rows.push([], ['REPEAT MEASUREMENTS THAT DISAGREE'], ['Product','Times measured','Lowest g','Highest g','Spread %']);
+    d.dupes.forEach(x=>rows.push([x.product, x.times, x.lo, x.hi, x.spread]));
+  }
+  rows.push([], ['DATA QUALITY'], ['Product','Issue','Detail']);
+  if(d.issues.length) d.issues.forEach(i=>rows.push([i.product, i.issue, i.detail]));
+  else rows.push(['Nothing flagged.']);
+  const csv=rows.map(r=>r.map(v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`IBI-Dimensions-Analysis-${todayISO()}.csv`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  showToast('Report CSV downloaded');
 }
 
 // ── CSV EXPORT ──
