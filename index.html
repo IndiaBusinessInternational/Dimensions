@@ -413,14 +413,14 @@ tr.row-editing td{background:var(--info-bg) !important}
   .hero{padding-left:10px;padding-right:10px}
   .main{padding-top:8px}
   .summary-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:0;gap:8px;margin-bottom:8px}
-  .metric{border-radius:0;border-left:0;border-right:0;box-shadow:none;padding:10px 10px 8px;overflow-wrap:anywhere}
+  .metric{border-radius:0;border-left:0;border-right:0;box-shadow:none;padding:10px 10px 8px;overflow-wrap:break-word}
   .section-hdr{padding:10px}
-  .form-card{padding:12px 10px;overflow-wrap:anywhere}
+  .form-card{padding:12px 10px;overflow-wrap:break-word}
   .edit-banner{padding:10px}
   .status-bar{padding:8px 10px;margin-bottom:8px}
   .filter-row{padding:8px 10px}
   .install-banner,.setup-banner{padding:10px}
-  .lowstock-alert{border-radius:0;border-left:0;border-right:0;box-shadow:none;padding:12px 10px;margin-bottom:8px;overflow-wrap:anywhere}
+  .lowstock-alert{border-radius:0;border-left:0;border-right:0;box-shadow:none;padding:12px 10px;margin-bottom:8px;overflow-wrap:break-word}
   .form-grid,.form-grid-3{grid-template-columns:minmax(0,1fr)}
   .rate-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .rep-summary,.rep-summary.six{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
@@ -429,6 +429,7 @@ tr.row-editing td{background:var(--info-bg) !important}
   .report-hdr{padding:12px 10px}
   .report-body{padding:12px 10px}
   .report-actions{padding:10px}
+  button,.btn,select,input,[role="button"]{overflow-wrap:normal}
 }
 </style>
 </head>
@@ -449,7 +450,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     <div class="topbar-left">
       <div class="ibi-logo"><svg class="mark"><use href="#ibiMark"/></svg></div>
       <div>
-        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.12</span></div>
+        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.13</span></div>
       </div>
     </div>
     <div class="topbar-right">
@@ -679,7 +680,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     </div>
   </div>
 
-  <div class="footer">IBI Dimensions Logger v2.12 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
+  <div class="footer">IBI Dimensions Logger v2.13 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
 </div>
 
 <!-- DRAWER MENU -->
@@ -698,7 +699,7 @@ tr.row-editing td{background:var(--info-bg) !important}
   <button class="drawer-item" onclick="toggleTheme();closeDrawer()"><i class="ti ti-sun"></i> Toggle Dark / Light Mode</button>
   <button class="drawer-item" onclick="closeDrawer();openBackend()"><i class="ti ti-plug"></i> Backend Connection</button>
   <div class="drawer-section-label">About</div>
-  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.12 &mdash; October 2026 &middot; Phones edge to edge</div>
+  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.13 &mdash; October 2026 &middot; Phones edge to edge</div>
 </div>
 
 <!-- REPORT MODAL -->
@@ -810,7 +811,7 @@ tr.row-editing td{background:var(--info-bg) !important}
 //                       ⚠ needs the v2.0 Apps Script deployed (getAll action).
 //  v1.6 and earlier   — Write-only form + local "Recent Submissions" list.
 // ═══════════════════════════════════════════════════════════════════════════
-const APP_VERSION = '2.12';
+const APP_VERSION = '2.13';
 
 // Same /exec as v1.6 — redeploy the NEW .gs onto this deployment (Manage
 // deployments -> Edit -> New version) so this URL keeps working.
