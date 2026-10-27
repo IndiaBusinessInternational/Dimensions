@@ -432,6 +432,13 @@ tr.row-editing td{background:var(--info-bg) !important}
   .report-actions{padding:10px}
   button,.btn,select,input,[role="button"]{overflow-wrap:normal}
 }
+/* v2.15 (27 Oct 2026): the Share button joined the top bar. On narrow phones the toggle slid over the title and
+   version badge; the "Dark" word beside the switch now hides below 420px and the title (never the badge) may
+   shorten with an ellipsis. */
+.topbar-left>div{min-width:0}
+.app-name{display:flex;align-items:center;gap:5px}
+.app-title{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:420px){.toggle-label{display:none}.topbar-right{gap:6px}}
 </style>
 </head>
 <body>
@@ -451,7 +458,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     <div class="topbar-left">
       <div class="ibi-logo"><svg class="mark"><use href="#ibiMark"/></svg></div>
       <div>
-        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.14</span></div>
+        <div class="app-name"><span class="app-title">IBI Dimensions Logger</span> <span class="ver-badge">v2.15</span></div>
       </div>
     </div>
     <div class="topbar-right">
@@ -681,7 +688,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     </div>
   </div>
 
-  <div class="footer">IBI Dimensions Logger v2.14 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
+  <div class="footer">IBI Dimensions Logger v2.15 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
 </div>
 
 <!-- DRAWER MENU -->
@@ -700,7 +707,7 @@ tr.row-editing td{background:var(--info-bg) !important}
   <button class="drawer-item" onclick="toggleTheme();closeDrawer()"><i class="ti ti-sun"></i> Toggle Dark / Light Mode</button>
   <button class="drawer-item" onclick="closeDrawer();openBackend()"><i class="ti ti-plug"></i> Backend Connection</button>
   <div class="drawer-section-label">About</div>
-  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.14 &mdash; October 2026 &middot; Share this app</div>
+  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.15 &mdash; October 2026 &middot; Share this app</div>
 </div>
 
 <!-- REPORT MODAL -->
@@ -812,7 +819,7 @@ tr.row-editing td{background:var(--info-bg) !important}
 //                       ⚠ needs the v2.0 Apps Script deployed (getAll action).
 //  v1.6 and earlier   — Write-only form + local "Recent Submissions" list.
 // ═══════════════════════════════════════════════════════════════════════════
-const APP_VERSION = '2.14';
+const APP_VERSION = '2.15';
 
 // Same /exec as v1.6 — redeploy the NEW .gs onto this deployment (Manage
 // deployments -> Edit -> New version) so this URL keeps working.
