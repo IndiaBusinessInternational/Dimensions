@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="IBI Dimensions">
 <meta name="description" content="Log product &amp; package dimensions, weight and capacity for every SKU — then browse, search, edit and export every entry. By India Business International.">
 <title>IBI Dimensions Logger</title>
+<script src="ibi-share.js" defer data-slot=".topbar-right"></script>
 
 <!-- ── Open Graph / social preview ── -->
 <meta property="og:type" content="website">
@@ -21,9 +22,9 @@
 <meta property="og:url" content="https://dimensions.indiabusinessinternational.online/">
 <meta property="og:title" content="IBI Dimensions Logger">
 <meta property="og:description" content="Log product &amp; package dimensions, weight and capacity for every SKU — then browse, search, edit and export every entry.">
-<meta property="og:image" content="https://dimensions.indiabusinessinternational.online/og-banner.png">
-<meta property="og:image:secure_url" content="https://dimensions.indiabusinessinternational.online/og-banner.png">
-<meta property="og:image:type" content="image/png">
+<meta property="og:image" content="https://dimensions.indiabusinessinternational.online/og-banner.jpg">
+<meta property="og:image:secure_url" content="https://dimensions.indiabusinessinternational.online/og-banner.jpg">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="IBI Dimensions Logger — India Business International">
@@ -32,7 +33,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="IBI Dimensions Logger">
 <meta name="twitter:description" content="Log product &amp; package dimensions, weight and capacity for every SKU — then browse, search, edit and export every entry.">
-<meta name="twitter:image" content="https://dimensions.indiabusinessinternational.online/og-banner.png">
+<meta name="twitter:image" content="https://dimensions.indiabusinessinternational.online/og-banner.jpg">
 <meta name="twitter:image:alt" content="IBI Dimensions Logger preview banner">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -450,7 +451,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     <div class="topbar-left">
       <div class="ibi-logo"><svg class="mark"><use href="#ibiMark"/></svg></div>
       <div>
-        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.13</span></div>
+        <div class="app-name">IBI Dimensions Logger <span class="ver-badge">v2.14</span></div>
       </div>
     </div>
     <div class="topbar-right">
@@ -680,7 +681,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     </div>
   </div>
 
-  <div class="footer">IBI Dimensions Logger v2.13 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
+  <div class="footer">IBI Dimensions Logger v2.14 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
 </div>
 
 <!-- DRAWER MENU -->
@@ -699,7 +700,7 @@ tr.row-editing td{background:var(--info-bg) !important}
   <button class="drawer-item" onclick="toggleTheme();closeDrawer()"><i class="ti ti-sun"></i> Toggle Dark / Light Mode</button>
   <button class="drawer-item" onclick="closeDrawer();openBackend()"><i class="ti ti-plug"></i> Backend Connection</button>
   <div class="drawer-section-label">About</div>
-  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.13 &mdash; October 2026 &middot; Phones edge to edge</div>
+  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.14 &mdash; October 2026 &middot; Share this app</div>
 </div>
 
 <!-- REPORT MODAL -->
@@ -811,7 +812,7 @@ tr.row-editing td{background:var(--info-bg) !important}
 //                       ⚠ needs the v2.0 Apps Script deployed (getAll action).
 //  v1.6 and earlier   — Write-only form + local "Recent Submissions" list.
 // ═══════════════════════════════════════════════════════════════════════════
-const APP_VERSION = '2.13';
+const APP_VERSION = '2.14';
 
 // Same /exec as v1.6 — redeploy the NEW .gs onto this deployment (Manage
 // deployments -> Edit -> New version) so this URL keeps working.
