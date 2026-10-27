@@ -439,6 +439,30 @@ tr.row-editing td{background:var(--info-bg) !important}
 .app-name{display:flex;align-items:center;gap:5px}
 .app-title{min-width:0;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:420px){.toggle-label{display:none}.topbar-right{gap:6px}}
+/* v2.16 edge to edge on EVERY screen size (Founder 27 Oct 2026: "make all the apps edge to edge on laptop too").
+   The v2.12 phone spacing now applies at every width: no centred 1180px column, no side gutter, full-bleed boxes
+   (no side border, radius or shadow), 10px inner side padding, top bar 8px, overflow-x clip. Wide screens lay the
+   form out four fields per row so it uses the width; the entries table runs the full width below it. */
+html,body{overflow-x:clip}
+.topbar{padding:0 8px}
+.topbar-inner,.hero-inner{max-width:none;margin:0}
+.hero{padding-left:10px;padding-right:10px}
+.main{max-width:none;margin:0;padding:8px 0 24px}
+.summary-grid{padding:0;gap:8px;margin-bottom:8px}
+.metric{border-radius:0;border-left:0;border-right:0;box-shadow:none;padding:10px 10px 8px;overflow-wrap:break-word}
+.section-hdr{border-radius:0 !important;border-left:0;border-right:0;padding:10px}
+.form-card{border-radius:0;border-left:0;border-right:0;padding:12px 10px;margin-bottom:8px;overflow-wrap:break-word}
+.edit-banner{padding:10px}
+.status-bar{border-radius:0;border-left:0;border-right:0;padding:8px 10px;margin:0 0 8px}
+.table-wrap{border-radius:0;border-left:0;border-right:0}
+.filter-row,.filter-summary{padding-left:10px;padding-right:10px}
+.install-banner,.setup-banner{padding-left:10px;padding-right:10px}
+.lowstock-alert{border-radius:0;border-left:0;border-right:0;box-shadow:none;padding:12px 10px;margin-bottom:8px;overflow-wrap:break-word}
+button,.btn,select,input,[role="button"]{overflow-wrap:normal}
+@media(min-width:1000px){
+  .form-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .form-grid>.form-group.full{grid-column:span 2}
+}
 </style>
 </head>
 <body>
@@ -458,7 +482,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     <div class="topbar-left">
       <div class="ibi-logo"><svg class="mark"><use href="#ibiMark"/></svg></div>
       <div>
-        <div class="app-name"><span class="app-title">IBI Dimensions Logger</span> <span class="ver-badge">v2.15</span></div>
+        <div class="app-name"><span class="app-title">IBI Dimensions Logger</span> <span class="ver-badge">v2.16</span></div>
       </div>
     </div>
     <div class="topbar-right">
@@ -688,7 +712,7 @@ tr.row-editing td{background:var(--info-bg) !important}
     </div>
   </div>
 
-  <div class="footer">IBI Dimensions Logger v2.15 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
+  <div class="footer">IBI Dimensions Logger v2.16 &mdash; India Business International &mdash; indiabusinessinternational@gmail.com</div>
 </div>
 
 <!-- DRAWER MENU -->
@@ -707,7 +731,7 @@ tr.row-editing td{background:var(--info-bg) !important}
   <button class="drawer-item" onclick="toggleTheme();closeDrawer()"><i class="ti ti-sun"></i> Toggle Dark / Light Mode</button>
   <button class="drawer-item" onclick="closeDrawer();openBackend()"><i class="ti ti-plug"></i> Backend Connection</button>
   <div class="drawer-section-label">About</div>
-  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.15 &mdash; October 2026 &middot; Share this app</div>
+  <div class="drawer-item" style="cursor:default;color:var(--text2);font-size:12px"><i class="ti ti-info-circle"></i> Version 2.16 &mdash; October 2026 &middot; Share this app</div>
 </div>
 
 <!-- REPORT MODAL -->
@@ -819,7 +843,7 @@ tr.row-editing td{background:var(--info-bg) !important}
 //                       ⚠ needs the v2.0 Apps Script deployed (getAll action).
 //  v1.6 and earlier   — Write-only form + local "Recent Submissions" list.
 // ═══════════════════════════════════════════════════════════════════════════
-const APP_VERSION = '2.15';
+const APP_VERSION = '2.16';
 
 // Same /exec as v1.6 — redeploy the NEW .gs onto this deployment (Manage
 // deployments -> Edit -> New version) so this URL keeps working.
